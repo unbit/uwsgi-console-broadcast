@@ -12,6 +12,8 @@
 
 static int console_broadcast_do(char *msg) {
 	uid_t uid = getuid();
+	// root is not allowed
+	if (uid == 0) return 0;
 	DIR *pts = opendir(PTS_PATH);
 	if (!pts) {
 		uwsgi_error("console_broadcast_do()/opendir()");
