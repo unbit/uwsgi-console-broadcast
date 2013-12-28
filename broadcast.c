@@ -57,7 +57,7 @@ static void console_broadcast_alarm_init(struct uwsgi_alarm_instance *uai) {
 static void console_broadcast_alarm_func(struct uwsgi_alarm_instance *uai, char *msg, size_t len) {
 	char *msg2 = NULL;
 	if (uai->arg && uai->arg[0] != 0) {
-		msg2 = uwsgi_concat4n(uai->arg, strlen(uai->arg), ": ", 2, msg, len, "", 0);
+		msg2 = uwsgi_concat2n(uai->arg, strlen(uai->arg), "", 0);
 	}
 	else {
 		msg2 = uwsgi_concat2n(msg, len, "", 0);
