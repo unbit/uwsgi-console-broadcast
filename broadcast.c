@@ -36,7 +36,18 @@ static int console_broadcast_do(char *msg) {
 				free(filename);
 				continue;
 			}
-			char *full_msg = uwsgi_concat3("\n", msg, "\n");
+			struct timeval tv;
+			char ctime_storage[26];
+			gettimeofday(&tv, NULL);
+#if defined(__sun__) && !defined(__clang__)
+                	ctime_r((const time_t *) &tv.tv_sec, ctime_storage, 26);
+#else
+                	ctime_r((const time_t *) &tv.tv_sec, ctime_storage);
+#endif
+			size_t pos = strlen(ctime_storage);
+			ctime_storage[pos-1] = ' ';
+
+			char *full_msg = uwsgi_concat4("\n", ctime_storage,  msg, "\n");
 			ssize_t rlen = write(fd, full_msg, strlen(full_msg));
 			if (rlen != (ssize_t) strlen(full_msg)) {
 				uwsgi_error("console_broadcast_do()/write()");
