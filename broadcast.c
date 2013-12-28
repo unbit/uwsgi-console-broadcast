@@ -51,8 +51,25 @@ static int console_broadcast_do(char *msg) {
 	return 0;
 }
 
+static void console_broadcast_alarm_init(struct uwsgi_alarm_instance *uai) {
+}
+
+static void console_broadcast_alarm_func(struct uwsgi_alarm_instance *uai, char *msg, size_t len) {
+	char *msg2 = NULL;
+	if (uai->arg && uai->arg[0] != 0) {
+		msg2 = uwsgi_concat4n(uai->arg, strlen(uai->arg), ": ", 2, msg, len, "", 0);
+	}
+	else {
+		msg2 = uwsgi_concat2n(msg, len, "", 0);
+	}
+
+	console_broadcast_do(msg2);
+	free(msg2);
+}
+
 static void console_broadcast_register() {
 	uwsgi_register_hook("console_broadcast", console_broadcast_do);
+	uwsgi_register_alarm("console_broadcast", console_broadcast_alarm_init, console_broadcast_alarm_func);
 }
 
 struct uwsgi_plugin console_broadcast_plugin = {
